@@ -20,11 +20,20 @@ client.on('message', message =>
 {
 	if(message.isMemberMentioned(client.user))
 	{
-		message.reply( '呼びましたか？' );
-		return;
-	} else {
-    
-  }  
+		if(message.member.voiceChannel){
+			message.member.voiceChannel.join().then( connection => {
+				const dispatcher = connection.playArbitraryInput('https://upload.wikimedia.org/wikipedia/commons/d/db/Gimn_Sovetskogo_Soyuza_%281977_Vocal%29.oga');
+				dispatcher.on('end', reason => {
+					connection.disconnect();
+				});
+			})
+			.catch(console.log);
+		}else{
+			message.reply( '呼びましたか？' );
+			return;
+		}
+	}
+
 });
 
 if(process.env.DISCORD_BOT_TOKEN == undefined)
