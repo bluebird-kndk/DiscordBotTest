@@ -5,7 +5,8 @@
   "main": "main.js",
   "dependencies": {
     "discord.js": "latest",
-    "opusscript": "0.0.6"
+    "opusscript": "0.0.6",
+    "ytdl-core": "^0.24.0"
   },
   "devDependencies": {
     "eslint": "^5.3.0",
