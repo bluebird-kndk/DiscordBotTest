@@ -13,9 +13,10 @@ const ytdl = require('ytdl-core');
 // 諸々定数
 const sovietStr = ['ソ連', 'soviet', 'タチャンカ', 'ﾀﾁｬﾝｶ', 'tachanka', '国歌'];
 const gonggyeokStr = ['コンギョ', 'ｺﾝｷﾞｮ', '攻撃', 'kongyo', 'gonggyeok'];
+const gonggyeokLiveStr = ['コンギョ2', 'ｺﾝｷﾞｮ2', 'コンギョライブ', 'コンギョlive'];
 const stopStr = ['中断', 'cancel', '停止', 'stop'];
 
-const streamOption = { seek: 0 };
+const streamOption = { seek: 0, volume: 0.8 };
 
 // 音声ストリーム
 var soundStream;
@@ -30,7 +31,7 @@ try {
         console.log(message.member)
         console.log(message.member.voice.channel)
         console.log(message.mentions.users)
-        const mentionsOptions = { ignoreEveryone:true }
+        const mentionsOptions = { ignoreEveryone: true }
         if (message.mentions.has(client.user.id, mentionsOptions)) {
             // メッセージ内にソ連国歌関連ワードが含まれていれば国歌を再生
             const isSoviet = checkMessageContainsKey(message.content, sovietStr);
@@ -52,21 +53,38 @@ try {
                     return;
                 }
             }
-          
+
+            const isGonggyeLive = checkMessageContainsKey(message.content, gonggyeokLiveStr);
+            if (isGonggyeLive) {
+                if (message.member.voice.channel) {
+                    message.member.voice.channel.join()
+                        .then(connection => {
+                            message.reply('白頭山の稲妻のように再生');
+                            soundStream = connection.play('https://cdn.glitch.com/b140d1af-ee8d-4d2e-a23b-d97fefe99390%2Fkongyo2.mp3?v=1595657007751', streamOption);
+                            soundStream.on('end', reason => {
+                                message.reply('音声再生終了');
+                                connection.disconnect();
+                            });
+                        }).catch(console.log);
+                    return;
+                } else {
+                    message.reply('白頭山の雷のごとくボイスチャンネルに入ってリプライを送る');
+                    return;
+                }
+            }
+            
             const isGonggyeok = checkMessageContainsKey(message.content, gonggyeokStr);
             if (isGonggyeok) {
                 if (message.member.voice.channel) {
-                    message.member.voice.channel.join().then(connection => {
-                        message.reply('白頭山の稲妻のように再生');
-                        const soundData = ytdl('https://www.youtube.com/watch?v=Xa47yIVUaMo', { filter: 'audioonly' });
-                        soundStream = null
-                        soundStream = connection.play(soundData, { volume: 0.2 });
-                        soundStream.on('end', reason => {
-                            message.reply('音声再生終了');
-                            connection.disconnect();
-                        });
-                    })
-                        .catch(console.log);
+                    message.member.voice.channel.join()
+                        .then(connection => {
+                            message.reply('白頭山の稲妻のように再生');
+                            soundStream = connection.play('https://cdn.glitch.com/b140d1af-ee8d-4d2e-a23b-d97fefe99390%2F%E3%82%B3%E3%83%B3%E3%82%AE%E3%83%A71.mp3?v=1595657219153', streamOption);
+                            soundStream.on('end', reason => {
+                                message.reply('音声再生終了');
+                                connection.disconnect();
+                            });
+                        }).catch(console.log);
                     return;
                 } else {
                     message.reply('白頭山の雷のごとくボイスチャンネルに入ってリプライを送る');
